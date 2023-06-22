@@ -1,6 +1,24 @@
 {# @var plugin \vardumper\promptdb\PromptDb #}
 {# @var settings \vardumper\promptdb\models\Settings #}
-
 {% import '_includes/forms.twig' as forms %}
 
-{# ... #}
+{{ forms.textField({
+    first: true,
+    label: 'Secret API Key',
+    name: 'apiKey',
+    id: 'apiKey',
+    placeholder: 'sk-....',
+    autofocus: true,
+    autocomplete: false,
+    value: settings.apiKey,
+    min: 49,
+    max: 54,
+}) }}
+	<p>
+	Find your Secret API Key in your
+		<a
+		href="https://beta.openai.com/account/api-keys">
+		User settings
+	</a>
+	.
+</p>

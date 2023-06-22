@@ -10,4 +10,23 @@ use craft\base\Model;
  */
 class Settings extends Model
 {
+    /** @var string */
+    public $apiKey = '';
+
+    /**
+     * @return array
+     */
+    public function rules(): array
+    {
+        return [
+            [
+                ['apiKey'],
+                'required'
+            ],
+            [
+                ['apiKey'],
+                'string'
+            ],
+        ];
+    }
 }

@@ -1,0 +1,11 @@
+{# @var plugin \vardumper\promptdb\PromptDb #}
+{# @var settings \vardumper\promptdb\models\Settings #}
+{% import '_includes/forms.twig' as forms %}
+	<h2>
+Prompt DB
+</h2>
+{{ forms.textareaField({label: 'Your search'}) }}
+{{ forms.submitButton({label:'Send'}) }}<div
+	id="{{ namespaceId }}-result"> </div>
+<div
+	id="{{ namespaceId }}-query"></div>
