@@ -51,6 +51,6 @@ class Utility extends \craft\base\Utility
     public static function contentHtml(): string
     {
         Craft::$app->getView()->registerAssetBundle(Assets::class);
-        return Craft::$app->getView()->renderTemplate('prompt-db/_index');
+        return Craft::$app->getView()->renderTemplate('prompt-db/_index', []);
     }
 }

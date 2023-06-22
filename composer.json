@@ -13,8 +13,9 @@
     "rss": "https://github.com/vardumper/craft-prompt-db/releases.atom"
   },
   "require": {
-    "php": ">=8.0.2",
-    "craftcms/cms": "^4.4.0"
+    "php": ">=8.1.0",
+    "craftcms/cms": "^4.4.0",
+    "openai-php/client": "^0.6.1"
   },
   "require-dev": {
     "craftcms/ecs": "dev-main",
@@ -47,12 +48,10 @@
   "config": {
     "sort-packages": true,
     "optimize-autoloader": true,
-    "platform": {
-      "php": "8.0.2"
-    },
     "allow-plugins": {
       "yiisoft/yii2-composer": true,
-      "craftcms/plugin-installer": true
+      "craftcms/plugin-installer": true,
+      "php-http/discovery": true
     }
   }
 }

@@ -1,11 +1,62 @@
 {# @var plugin \vardumper\promptdb\PromptDb #}
 {# @var settings \vardumper\promptdb\models\Settings #}
 {% import '_includes/forms.twig' as forms %}
-	<h2>
-Prompt DB
-</h2>
-{{ forms.textareaField({label: 'Your search'}) }}
-{{ forms.submitButton({label:'Send'}) }}<div
-	id="{{ namespaceId }}-result"> </div>
-<div
-	id="{{ namespaceId }}-query"></div>
+
+	<form
+	id="prompt-db-form"
+	method="post"
+	action=""
+	accept-charset="UTF-8">
+
+	{{ csrfInput() }}
+
+	<input
+		type="hidden"
+		name="action"
+		value="prompt-db/execute">
+
+	{{ forms.textareaField({label: 'Your search', id: 'prompt-db-prompt', name: 'prompt'}) }}
+
+	<div
+		class="flex">
+		<div
+			class="flex-grow">
+			{{ forms.submitButton({label:'Send', id: 'prompt-db-submit'}) }}
+		</div>
+		<div
+			class="flex-grow right rightalign">
+
+			<span
+				class="btngroup right ">
+
+				<a
+					href=""
+					id="prompt-db-submit-and-save"
+					class="btn right">
+					Example #1
+				</a>
+				<a
+					id="prompt-db-submit-and-save"
+					class="btn right">
+					Example #2
+
+				</a>
+				<a
+					id="prompt-db-submit-and-save"
+					class="btn right">
+					Example #3
+
+				</a>
+			</span>
+		</div>
+	</div>
+
+	<div
+		id="prompt-db-result"></div>
+	<div
+		id="prompt-db-generated-query">
+		<pre></pre>
+	</div>
+	<div
+		id="prompt-db-result"></div>
+</form>
