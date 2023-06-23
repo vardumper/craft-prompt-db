@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace vardumper\promptdb\services;
 
+use craft\base\Component;
 use OpenAI\Client as OpenAIClient;
 
-class ChatGPT implements ChatGPTInterface
+class ChatGPT extends Component implements ChatGPTInterface
 {
     private const CACHE_DIR = __DIR__ . '/../cache';
     private const BASE_PROMPT_CHATGPT = "Given the database schema delimited by triple backticks ```%s``` translate the text delimited by triple quotes into a valid %s query \"\"\"%s\"\"\". Give me only the SQL code part of the answer. Compress the SQL output removing spaces and line breaks.";
@@ -22,7 +23,7 @@ class ChatGPT implements ChatGPTInterface
         $this->basePrompt = self::BASE_PROMPT_CHATGPT;
     }
 
-    public function search(string $index, string $prompt, bool $cache = true): // Yii db result set
+    public function getSQL(string $index, string $prompt, bool $cache = true): // Yii db result set
     {
         $prompt = sprintf($this->basePrompt, $schema, $driverName, $prompt);
         $promptHash = md5($prompt);

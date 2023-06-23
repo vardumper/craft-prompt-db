@@ -11,7 +11,7 @@ namespace vardumper\promptdb\controllers;
 
 use Craft;
 use craft\web\Controller;
-use vardumper\promptdb\services\ChatGPTInterface;
+use vardumper\promptdb\PromptDb;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
 
@@ -39,13 +39,11 @@ class DefaultController extends Controller
                 $driverName = Craft::$app->getDb()->getDriverName();
                 $driverVersion = Craft::$app->getDb()->getServerVersion();
 
-                /** @var ChatGPTInterface $promptDbChatGPT */
-                $promptDbChatGPT = Craft::$app->get('promptDbChatGPT');
-
-                $sql = $promptDbChatGPT->search($driverName, $driverVersion, $schema, $prompt);
+                $sql = PromptDb::getInstance()->demoService->getSQL($driverName, $driverVersion, $schema, $prompt);
                 // $createTableSyntax = Craft::$app->getDb()->getTableSchema()
                 // $createTableSyntax = Craft::$app->getDb()->createCommand('SHOW CREATE TABLE ' . $schema->quoteTableName($prompt))->queryAll();
                 $result = Craft::$app->getDb()->createCommand($sql)->queryAll();
+                $query = yii\db\Query
                 $dataProvider = new ActiveDataProvider([
                     'query' => $result,
                     // @todo It's too much additional AJAX complexity for now. Add pagination later

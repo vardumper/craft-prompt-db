@@ -3,14 +3,17 @@
 namespace vardumper\promptdb;
 
 use Craft;
-use craft\events\RegisterComponentTypesEvent;
-use craft\services\Utilities;
-use yii\base\Event;
+use Symfony\Component\VarDumper\VarDumper;
 use craft\base\Model;
 use craft\base\Plugin;
+use craft\events\RegisterComponentTypesEvent;
+use craft\services\Utilities;
 use vardumper\promptdb\models\Settings;
+use vardumper\promptdb\services\ChatGPT;
 use vardumper\promptdb\services\ChatGPTInterface;
+use vardumper\promptdb\services\DemoService;
 use vardumper\promptdb\utilities\Utility;
+use yii\base\Event;
 
 /**
  * Prompt DB plugin
@@ -20,6 +23,9 @@ use vardumper\promptdb\utilities\Utility;
  * @author Erik Pöhler <info@erikpoehler.com>
  * @copyright Erik Pöhler
  * @license https://craftcms.github.io/license/ Craft License
+ * @property-read ChatGPT $chatGPT
+ * @property ChatGTP $vhatGPT;
+ * @property-read DemoService $demoService
  */
 class PromptDb extends Plugin
 {
@@ -33,9 +39,7 @@ class PromptDb extends Plugin
     {
         return [
             'components' => [
-                'promptDbChatGPT' => [
-                    'class' => ChatGPTInterface::class,
-                ],
+                'chatGTP' => ['class' => ChatGPT::class], 'demoService' => DemoService::class,
             ],
         ];
     }
@@ -47,10 +51,7 @@ class PromptDb extends Plugin
         Craft::setAlias('@vardumper/prompt-db', $this->getBasePath());
 
         $this->setComponents([
-            'promptDbChatGPT' => [
-                'class' => ChatGPTInterface::class,
-                // 'apiKey' => $this->getSettings()->apiKey,
-            ],
+            'chatGTP' => ChatGPT::class
         ]);
 
         // Defer most setup tasks until Craft is fully initialized
@@ -80,6 +81,11 @@ class PromptDb extends Plugin
             'prompt-db/_settings.twig',
             ['settings' => $this->getSettings()]
         );
+    }
+
+    public function getChatGPT(): ChatGPTInterface
+    {
+        return $this->get('chatGPT');
     }
 
     // public function getSettingsResponse(): mixed
