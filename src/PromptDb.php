@@ -43,7 +43,6 @@ class PromptDb extends Plugin
         return [
             'components' => [
                 'demoService' => DemoService::class,
-                'openAiClient' => OpenAI::class,
             ],
         ];
     }
@@ -53,11 +52,12 @@ class PromptDb extends Plugin
         parent::init();
 
         Craft::setAlias('@vardumper/prompt-db', $this->getBasePath());
-        Craft::$container->set('openAiClient', function ($container, $params, $config) {
-            return OpenAI::client('abc');
-        });
+
         $this->setComponents([
-            // 'openAiClient' => ($this->settings->apiKey),
+            'demoService' => function () {
+                $openAi = OpenAI::client($this->settings->apiKey);
+                return new DemoService($openAi);
+            },
         ]);
 
         // Defer most setup tasks until Craft is fully initialized

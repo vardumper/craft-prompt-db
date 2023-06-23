@@ -12,6 +12,7 @@ namespace vardumper\promptdb\controllers;
 use Craft;
 use craft\web\Controller;
 use OpenAI;
+use PDO;
 use vardumper\promptdb\PromptDb;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
@@ -38,20 +39,19 @@ class DefaultController extends Controller
         try {
             $result = [];
             if ($prompt) {
-                $schema = Craft::$app->getDb()->getSchema();
+                $schema = '';
+                $tablenames = array_values(Craft::$app->getDb()->createCommand('show tables')->queryAll(PDO::FETCH_COLUMN));
+                asort($tablenames);
+                foreach ($tablenames as $table) {
+                    $tableschema = Craft::$app->getDb()->createCommand(sprintf('show create table %s;', $table))->queryOne();
+                    $schema .= $tableschema['Create Table'] . ";\n";
+                }
                 $driverName = Craft::$app->getDb()->getDriverName();
                 $driverVersion = Craft::$app->getDb()->getServerVersion();
-                $client = OpenAI::client(PromptDb::getInstance()->settings->apiKey);
-                $sql = (PromptDb::getInstance()->demoService)($client);
-                $sql = $demoService->getSQL();
+                $sql = (PromptDb::getInstance()->demoService)($driverName, $driverVersion, $schema, $prompt);
                 // $createTableSyntax = Craft::$app->getDb()->getTableSchema()
                 // $createTableSyntax = Craft::$app->getDb()->createCommand('SHOW CREATE TABLE ' . $schema->quoteTableName($prompt))->queryAll();
                 $result = Craft::$app->getDb()->createCommand($sql)->queryAll();
-                // $qb = Craft::$app->getDb()->getQueryBuilder();
-
-                // $cmd = Craft::$app->getDb()->createCommand($sql);
-                // $result = $cmd->execute();
-                $columns = array_keys($result[0]);
                 $dataProvider = new ArrayDataProvider([
                     'allModels' => $result,
                     // @todo It's too much additional AJAX complexity for now. Add pagination later
