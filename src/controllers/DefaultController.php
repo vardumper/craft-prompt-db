@@ -11,8 +11,11 @@ namespace vardumper\promptdb\controllers;
 
 use Craft;
 use craft\web\Controller;
+use OpenAI;
 use vardumper\promptdb\PromptDb;
 use yii\data\ActiveDataProvider;
+use yii\data\ArrayDataProvider;
+use yii\db\Query;
 use yii\grid\GridView;
 
 /**
@@ -38,14 +41,19 @@ class DefaultController extends Controller
                 $schema = Craft::$app->getDb()->getSchema();
                 $driverName = Craft::$app->getDb()->getDriverName();
                 $driverVersion = Craft::$app->getDb()->getServerVersion();
-
-                $sql = PromptDb::getInstance()->demoService->getSQL($driverName, $driverVersion, $schema, $prompt);
+                $client = OpenAI::client(PromptDb::getInstance()->settings->apiKey);
+                $sql = (PromptDb::getInstance()->demoService)($client);
+                $sql = $demoService->getSQL();
                 // $createTableSyntax = Craft::$app->getDb()->getTableSchema()
                 // $createTableSyntax = Craft::$app->getDb()->createCommand('SHOW CREATE TABLE ' . $schema->quoteTableName($prompt))->queryAll();
                 $result = Craft::$app->getDb()->createCommand($sql)->queryAll();
-                $query = yii\db\Query
-                $dataProvider = new ActiveDataProvider([
-                    'query' => $result,
+                // $qb = Craft::$app->getDb()->getQueryBuilder();
+
+                // $cmd = Craft::$app->getDb()->createCommand($sql);
+                // $result = $cmd->execute();
+                $columns = array_keys($result[0]);
+                $dataProvider = new ArrayDataProvider([
+                    'allModels' => $result,
                     // @todo It's too much additional AJAX complexity for now. Add pagination later
                     // 'pagination' => [
                     //     'pageSize' => $per_page,
@@ -55,15 +63,14 @@ class DefaultController extends Controller
                 ]);
                 $grid = GridView::widget([
                     'emptyCell' => '',
-                    'emptyText' => Craft::t('site', 'event.noRecords'),
+                    'emptyText' => Craft::t('prompt-db', 'Empty result set'),
                     'dataProvider' => $dataProvider,
-                    'columns' => []
                 ]);
             }
         } catch (\Exception $e) {
             return $this->asJson([
                 'success' => false,
-                'error' => $e->getMessage(),
+                'error' => $e->__toString(),
             ]);
         }
 

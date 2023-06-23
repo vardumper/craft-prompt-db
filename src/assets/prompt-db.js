@@ -28,8 +28,8 @@ $form.on("submit", function (ev) {
         var html;
 
         if (response.success) {
-          if (response.result.length) {
-            html = response.result;
+          if (response.grid.length) {
+            html = response.grid;
           }
         } else {
           html = '<p class="error">' + response.error + "</p>";

@@ -8,6 +8,9 @@ use craft\base\Model;
 use craft\base\Plugin;
 use craft\events\RegisterComponentTypesEvent;
 use craft\services\Utilities;
+use OpenAI;
+use OpenAI\Client;
+use OpenAI\Contracts\ClientContract;
 use vardumper\promptdb\models\Settings;
 use vardumper\promptdb\services\ChatGPT;
 use vardumper\promptdb\services\ChatGPTInterface;
@@ -39,7 +42,8 @@ class PromptDb extends Plugin
     {
         return [
             'components' => [
-                'chatGTP' => ['class' => ChatGPT::class], 'demoService' => DemoService::class,
+                'demoService' => DemoService::class,
+                'openAiClient' => OpenAI::class,
             ],
         ];
     }
@@ -49,9 +53,11 @@ class PromptDb extends Plugin
         parent::init();
 
         Craft::setAlias('@vardumper/prompt-db', $this->getBasePath());
-
+        Craft::$container->set('openAiClient', function ($container, $params, $config) {
+            return OpenAI::client('abc');
+        });
         $this->setComponents([
-            'chatGTP' => ChatGPT::class
+            // 'openAiClient' => ($this->settings->apiKey),
         ]);
 
         // Defer most setup tasks until Craft is fully initialized
