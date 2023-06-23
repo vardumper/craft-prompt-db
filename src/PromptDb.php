@@ -9,6 +9,7 @@ use yii\base\Event;
 use craft\base\Model;
 use craft\base\Plugin;
 use vardumper\promptdb\models\Settings;
+use vardumper\promptdb\services\ChatGPTInterface;
 use vardumper\promptdb\utilities\Utility;
 
 /**
@@ -32,7 +33,7 @@ class PromptDb extends Plugin
     {
         return [
             'components' => [
-                // Define component configs here...
+                'promptDbChatGPT' => ChatGPTInterface::class,
             ],
         ];
     }
