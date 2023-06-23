@@ -33,7 +33,9 @@ class PromptDb extends Plugin
     {
         return [
             'components' => [
-                'promptDbChatGPT' => ChatGPTInterface::class,
+                'promptDbChatGPT' => [
+                    'class' => ChatGPTInterface::class,
+                ],
             ],
         ];
     }
@@ -43,6 +45,13 @@ class PromptDb extends Plugin
         parent::init();
 
         Craft::setAlias('@vardumper/prompt-db', $this->getBasePath());
+
+        $this->setComponents([
+            'promptDbChatGPT' => [
+                'class' => ChatGPTInterface::class,
+                // 'apiKey' => $this->getSettings()->apiKey,
+            ],
+        ]);
 
         // Defer most setup tasks until Craft is fully initialized
         Craft::$app->onInit(function () {

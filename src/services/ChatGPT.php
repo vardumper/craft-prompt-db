@@ -6,7 +6,7 @@ namespace vardumper\promptdb\services;
 
 use OpenAI\Client as OpenAIClient;
 
-class ChatGPT
+class ChatGPT implements ChatGPTInterface
 {
     private const CACHE_DIR = __DIR__ . '/../cache';
     private const BASE_PROMPT_CHATGPT = "Given the database schema delimited by triple backticks ```%s``` translate the text delimited by triple quotes into a valid %s query \"\"\"%s\"\"\". Give me only the SQL code part of the answer. Compress the SQL output removing spaces and line breaks.";

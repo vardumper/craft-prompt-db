@@ -12,6 +12,8 @@ namespace vardumper\promptdb\controllers;
 use Craft;
 use craft\web\Controller;
 use vardumper\promptdb\services\ChatGPTInterface;
+use yii\data\ActiveDataProvider;
+use yii\grid\GridView;
 
 /**
  * Query controller class
@@ -38,11 +40,27 @@ class DefaultController extends Controller
                 $driverVersion = Craft::$app->getDb()->getServerVersion();
 
                 /** @var ChatGPTInterface $promptDbChatGPT */
-                $promptDbChatGPT = Craft::$app->getComponents()->get('promptDbChatGPT');
+                $promptDbChatGPT = Craft::$app->get('promptDbChatGPT');
+
                 $sql = $promptDbChatGPT->search($driverName, $driverVersion, $schema, $prompt);
                 // $createTableSyntax = Craft::$app->getDb()->getTableSchema()
                 // $createTableSyntax = Craft::$app->getDb()->createCommand('SHOW CREATE TABLE ' . $schema->quoteTableName($prompt))->queryAll();
                 $result = Craft::$app->getDb()->createCommand($sql)->queryAll();
+                $dataProvider = new ActiveDataProvider([
+                    'query' => $result,
+                    // @todo It's too much additional AJAX complexity for now. Add pagination later
+                    // 'pagination' => [
+                    //     'pageSize' => $per_page,
+                    //     'page' => $page - 1,
+                    // ],
+                    'sort' => false,
+                ]);
+                $grid = GridView::widget([
+                    'emptyCell' => '',
+                    'emptyText' => Craft::t('site', 'event.noRecords'),
+                    'dataProvider' => $dataProvider,
+                    'columns' => []
+                ]);
             }
         } catch (\Exception $e) {
             return $this->asJson([
