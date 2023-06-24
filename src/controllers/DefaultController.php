@@ -1,23 +1,14 @@
 <?php
 
 declare(strict_types=1);
-/**
- * @link https://craftcms.com/
- * @copyright Copyright (c) Pixel & Tonic, Inc.
- * @license MIT
- */
 
 namespace vardumper\promptdb\controllers;
 
 use Craft;
 use craft\web\Controller;
 use DOMDocument;
-use OpenAI;
-use PDO;
 use vardumper\promptdb\PromptDb;
-use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
-use yii\db\Query;
 use yii\grid\GridView;
 
 /**
@@ -34,49 +25,44 @@ class DefaultController extends Controller
     {
         $this->requirePermission('utility:prompt-db');
         $this->requireAcceptsJson();
+        // die('xxx');
 
         $prompt = Craft::$app->getRequest()->getRequiredBodyParam('prompt');
 
         try {
-            $result = [];
-            if ($prompt) {
-                $schema = '';
-                $tablenames = array_values(Craft::$app->getDb()->createCommand('show tables')->queryAll(PDO::FETCH_COLUMN));
-                asort($tablenames);
-                foreach ($tablenames as $table) {
-                    // filter out empty tables
-                    if (Craft::$app->getDb()->createCommand("SELECT COUNT(*) AS count FROM $table")->queryOne(PDO::FETCH_COLUMN) === 0) {
-                        continue;
-                    }
-
-                    if (in_array($table, ['sessions', 'revisions'])) {
-                        continue;
-                    }
-
-                    $tableschema = Craft::$app->getDb()->createCommand(sprintf('show create table %s;', $table))->queryOne();
-                    $schema .= $tableschema['Create Table'] . ";\n";
-                }
-                $driverName = Craft::$app->getDb()->getDriverName();
-                $driverVersion = Craft::$app->getDb()->getServerVersion();
-                $sql = (PromptDb::getInstance()->demoService)($driverName, $driverVersion, $schema, $prompt);
-                $result = Craft::$app->getDb()->createCommand($sql)->queryAll();
-                $dataProvider = new ArrayDataProvider([
-                    'allModels' => $result,
-                    // @todo It's too much additional AJAX complexity for now. Add pagination later
-                    // 'pagination' => [
-                    //     'pageSize' => $per_page,
-                    //     'page' => $page - 1,
-                    // ],
-                    'sort' => false,
+            $driverName = Craft::$app->getDb()->getDriverName();
+            $driverVersion = Craft::$app->getDb()->getServerVersion();
+            if (empty($prompt)) {
+                return $this->asJson([
+                    'success' => false,
+                    'error' => 'No prompt provided',
                 ]);
-                $grid = GridView::widget([
-                    'emptyCell' => '',
-                    'emptyText' => Craft::t('prompt-db', 'Empty result set'),
-                    'dataProvider' => $dataProvider,
-                ]);
-
-                $grid = $this->craftifyYiiGrid($grid);
             }
+
+            $schema = (PromptDb::getInstance()->dbSchemaService)();
+            $sql = (PromptDb::getInstance()->chatGPTService)($driverName, $driverVersion, $schema, $prompt);
+
+            if (self::contains($sql, ['update', 'alter', 'drop', 'truncate', 'insert', 'delete', 'replace', 'set'], true)) {
+                Craft::error($sql);
+                return $this->asJson([
+                    'success' => false,
+                    'error' => 'This plugin does not allow you to modify the database.',
+                ]);
+            }
+            $result = Craft::$app->getDb()->createCommand($sql)->queryAll();
+
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $result,
+                'sort' => false,
+            ]);
+
+            $grid = GridView::widget([
+                'emptyCell' => '',
+                'emptyText' => Craft::t('prompt-db', 'Empty result set'),
+                'dataProvider' => $dataProvider,
+            ]);
+
+            $grid = $this->craftifyYiiGrid($grid);
         } catch (\Exception $e) {
             return $this->asJson([
                 'success' => false,
@@ -93,7 +79,22 @@ class DefaultController extends Controller
         ]);
     }
 
-    public function craftifyYiiGrid(string $html): string
+    public static function contains($haystack, $needles, $ignoreCase = false)
+    {
+        if ($ignoreCase) {
+            $haystack = mb_strtolower($haystack);
+            $needles = array_map('mb_strtolower', $needles);
+        }
+        foreach ((array) $needles as $needle) {
+            if ($needle !== '' && mb_strpos($haystack, $needle) !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function craftifyYiiGrid(string $html): string
     {
         libxml_use_internal_errors(true);
         $dom = new DOMDocument("1.0", "UTF-8");

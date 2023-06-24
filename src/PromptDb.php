@@ -3,18 +3,15 @@
 namespace vardumper\promptdb;
 
 use Craft;
-use Symfony\Component\VarDumper\VarDumper;
 use craft\base\Model;
 use craft\base\Plugin;
 use craft\events\RegisterComponentTypesEvent;
 use craft\services\Utilities;
 use OpenAI;
-use OpenAI\Client;
-use OpenAI\Contracts\ClientContract;
 use vardumper\promptdb\models\Settings;
-use vardumper\promptdb\services\ChatGPT;
-use vardumper\promptdb\services\ChatGPTInterface;
-use vardumper\promptdb\services\DemoService;
+use vardumper\promptdb\models\Utility as ModelsUtility;
+use vardumper\promptdb\services\ChatGPTService;
+use vardumper\promptdb\services\DBSchemaService;
 use vardumper\promptdb\utilities\Utility;
 use yii\base\Event;
 
@@ -28,7 +25,7 @@ use yii\base\Event;
  * @license https://craftcms.github.io/license/ Craft License
  * @property-read ChatGPT $chatGPT
  * @property ChatGTP $vhatGPT;
- * @property-read DemoService $demoService
+ * @property-read ChatGPTService $chatGPTService
  */
 class PromptDb extends Plugin
 {
@@ -42,7 +39,8 @@ class PromptDb extends Plugin
     {
         return [
             'components' => [
-                'demoService' => DemoService::class,
+                'chatGPTService' => ChatGPTService::class,
+                'dbSchemaService' => DBSchemaService::class,
             ],
         ];
     }
@@ -54,10 +52,12 @@ class PromptDb extends Plugin
         Craft::setAlias('@vardumper/prompt-db', $this->getBasePath());
 
         $this->setComponents([
-            'demoService' => function () {
+            'chatGPTService' => function () {
+                $user = !empty($this->settings->user) ? $this->settings->user : '';
                 $openAi = OpenAI::client($this->settings->apiKey);
-                return new DemoService($openAi);
+                return new ChatGPTService($openAi, $user);
             },
+            'dbSchemaService' => new DBSchemaService(),
         ]);
 
         // Defer most setup tasks until Craft is fully initialized
@@ -89,24 +89,18 @@ class PromptDb extends Plugin
         );
     }
 
-    public function getChatGPT(): ChatGPTInterface
-    {
-        return $this->get('chatGPT');
-    }
-
-    // public function getSettingsResponse(): mixed
-    // {
-    //     // Redirect to our settings page
-    //     Craft::$app->controller->redirect(
-    //         UrlHelper::cpUrl('prompt-db/settings')
-    //     );
-
-    //     return null;
-    // }
-
     private function attachEventHandlers(): void
     {
         // Register event handlers here ...
         // (see https://craftcms.com/docs/4.x/extend/events.html to get started)
+    }
+
+    public static function getCachePath(): string
+    {
+        $path = Craft::$app->getPath()->getStoragePath() . DIRECTORY_SEPARATOR . 'prompt-db' . DIRECTORY_SEPARATOR;
+        if (!is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
+        return $path;
     }
 }

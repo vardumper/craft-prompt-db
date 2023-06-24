@@ -2,7 +2,6 @@
 
 namespace vardumper\promptdb\models;
 
-use Craft;
 use craft\base\Model;
 
 /**
@@ -12,6 +11,9 @@ class Settings extends Model
 {
     /** @var string */
     public $apiKey = '';
+
+    /** @var string */
+    public $user = '';
 
     /**
      * @return array
@@ -24,7 +26,7 @@ class Settings extends Model
                 'required'
             ],
             [
-                ['apiKey'],
+                ['apiKey', 'user'],
                 'string'
             ],
         ];

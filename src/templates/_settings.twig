@@ -13,7 +13,10 @@
     value: settings.apiKey,
     min: 49,
     max: 54,
+    length: 54,
+    maxlength: 54,
 }) }}
+
 	<p>
 	Find your Secret API Key in your
 		<a
@@ -21,4 +24,24 @@
 		User settings
 	</a>
 	.
+</p>
+
+
+{{ forms.textField({
+    first: true,
+    label: 'User Email (optional)',
+    name: 'user',
+    id: 'user',
+    placeholder: 'email@example.com',
+    autofocus: true,
+    autocomplete: false,
+    value: settings.user
+}) }}
+
+<p>
+	If provided, the email is sent along with every request to OpenAI. This is useful for security, debugging and support.
+	<a
+		href="https://platform.openai.com/docs/guides/safety-best-practices/end-user-ids">
+		Read more
+	</a>
 </p>

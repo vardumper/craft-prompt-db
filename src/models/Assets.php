@@ -33,8 +33,12 @@ class Assets extends AssetBundle
             CpAsset::class,
         ];
 
+        $this->css = [
+            'highlight.css',
+        ];
+
         $this->js = [
-            'prompt-db.js',
+            'scripts.min.js',
         ];
 
         parent::init();

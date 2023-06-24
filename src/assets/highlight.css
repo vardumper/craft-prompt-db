@@ -1,0 +1,131 @@
+/* a11y-dark theme */
+/* Based on the Tomorrow Night Eighties theme: https://github.com/isagalaev/highlight.js/blob/master/src/styles/tomorrow-night-eighties.css */
+/* @author: ericwbailey */
+:root {
+  --code-background-color: hsl(205deg, 20%, 94%);
+  --code-color: #f8f8f2; /* var(--muted-color); */
+  --code-kbd-background-color: var(--contrast);
+  --code-kbd-color: var(--contrast-inverse);
+  --code-tag-color: #ffa07a; /*#{hsl(330, 30%, 50%)};*/
+  --code-property-color: #{hsl(185, 30%, 50%)};
+  --code-value-color: #{hsl(40, 10%, 50%)};
+  --code-attr-color: #ffd700;
+  --code-comment-color: #d4d0ab;
+  --code-keyword-color: #dcc6e0;
+  --code-title-color: #00e0e0;
+  --code-meta-color: #f5ab35;
+  --code-string-color: #abe338; /* #f5ab35;*/
+  --spacing: 1rem;
+  --border-radius: 5px;
+  --font-weight: 400;
+}
+
+/* Comment */
+.hljs-comment,
+.hljs-quote {
+  color: darken(#d4d0ab, 15%);
+}
+
+/* Red */
+.hljs-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+  color: #ff9da4; /*var(--code-tag-color) !important; // #ffa07a;*/
+}
+
+/* Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+  color: var(--code-meta-color) !important; /* #f5ab35;*/
+}
+
+/* Yellow */
+.hljs-attribute,
+.hljs-attr {
+  color: var(--code-attr-color) !important; /* #ffd700;*/
+}
+
+/* Green (strings) */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+  color: var(--code-string-color) !important; /* #abe338;*/
+}
+
+/* Blue (classnames, functions, ) */
+.hljs-title,
+.hljs-section {
+  color: var(--code-title-color) !important; /* cyan*/
+}
+
+/* Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+  color: var(--code-keyword-color) !important; /* #dcc6e0;*/
+}
+
+.hljs-template-tag {
+  color: var(--code-title-color) !important;
+  font-weight: bold;
+}
+
+.hljs-template-variable {
+  color: var(--code-title-color) !important
+}
+
+.hljs-regexp {}
+.hljs {
+  display: block;
+  overflow-x: auto;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+pre,
+code,
+code.hljs,
+samp {
+  color: #eaeaea; /* var(--code-color) !important; */
+}
+
+pre:has(code.hljs),
+pre:has(code) {
+  margin-top: 3rem 0;
+  background-color: #333;
+  box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
+  margin-bottom: calc(var(--spacing) * 3);
+}
+
+div.filename {
+background: #111;
+font-size: 0.85em !important;
+padding: 0 var(--spacing);
+color: #888;
+font-weight: 500;
+border-top-left-radius: 6px;
+border-top-right-radius: 6px;
+font-family: 'Source Code Pro', "Inter var", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, sans-serif;
+display: block;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+text-align: left;
+line-height: 2rem;
+}
