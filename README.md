@@ -4,7 +4,8 @@ An experimental use of chatgpt to turn natural language into database queries
 
 ## Requirements
 
-This plugin requires Craft CMS 4.4.0 or later, and PHP 8.0.2 or later.
+* This plugin requires Craft CMS 4.4.0 or later, and PHP 8.0.2 or later.
+* This plugin uses PHPs YAML extension to create a very compact database DDL (schema file). Install it with `brew install libyaml && pecl install yaml`
 
 ## Installation
 
