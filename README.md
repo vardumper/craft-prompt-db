@@ -1,6 +1,6 @@
 # Prompt DB
 
-An experimental use of chatgpt to turn natural language into database queries
+An experimental use of chatgpt to turn natural language into database queries and code examples.
 
 ## Requirements
 
