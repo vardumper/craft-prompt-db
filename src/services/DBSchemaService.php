@@ -10,36 +10,54 @@ use yii\base\Component;
 
 class DBSchemaService extends Component
 {
+    /**
+     * do not include cache-alike tables in the schema
+     * @var array
+     */
+    private const EXCLUDE_TABLES = ['sessions', 'revisions'];
+
+    /**
+     * where to cache the schema for subsequent requests
+     * @var string
+     */
     private string $cacheDir;
 
     public function __construct()
     {
         $this->cacheDir = PromptDb::getCachePath();
     }
+
     public function __invoke(): string
     {
         $schema = $this->getCacheSchema();
-        if ($schema !== false) {
+        if ($schema) {
             return $schema;
         }
 
-        $tablenames = array_values(Craft::$app->getDb()->createCommand('show tables')->queryAll(PDO::FETCH_COLUMN));
+        $tablenames = array_values(Craft::$app->getDb()->createCommand('show tables')->queryAll(\PDO::FETCH_COLUMN));
         asort($tablenames);
         $allTables = [];
         foreach ($tablenames as $table) {
 
             // filter out empty tables
-            if (Craft::$app->getDb()->createCommand("SELECT COUNT(*) AS count FROM $table")->queryOne(PDO::FETCH_COLUMN) === 0) {
+            if (Craft::$app
+                ->getDb()
+                ->createCommand(sprintf('SELECT COUNT(*) AS count FROM %s', $table))
+                ->queryOne(\PDO::FETCH_COLUMN) === 0) {
                 continue;
             }
 
-            // maybe filter out more cache-alike stuff
-            if (in_array($table, ['sessions', 'revisions'])) {
+            // maybe filter out more cache-alike tables
+            if (in_array($table, self::EXCLUDE_TABLES, true)) {
                 continue;
             }
 
             $tableInfo = ['name' => $table, 'columns' => []];
-            $columns = Craft::$app->getDb()->createCommand(sprintf('DESCRIBE %s;', $table))->queryAll(PDO::FETCH_ASSOC);
+            $columns = Craft::$app
+                ->getDb()
+                ->createCommand(sprintf('DESCRIBE %s;', $table))
+                ->queryAll(\PDO::FETCH_ASSOC);
+
             $cols = [];
             foreach ($columns as $column) {
                 $cols[] = [
@@ -56,13 +74,17 @@ class DBSchemaService extends Component
         return $yaml;
     }
 
-    protected function getCacheSchema(): string|false
+    /**
+     * only create a YAML db schema once every 24 hours
+     * @return bool|string|null
+     */
+    protected function getCacheSchema(): ?string
     {
-        $filename =  sprintf("%s/schema.yaml", $this->cacheDir);
+        $filename = sprintf("%s/schema.yaml", $this->cacheDir);
         if (file_exists($filename) && filemtime($filename) > time() - 60 * 60 * 24) {
             return file_get_contents($filename);
         }
-        return false;
+        return null;
     }
 
     protected function setCacheSchema(string $yaml): bool

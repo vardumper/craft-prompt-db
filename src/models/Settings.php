@@ -23,11 +23,11 @@ class Settings extends Model
         return [
             [
                 ['apiKey'],
-                'required'
+                'required',
             ],
             [
                 ['apiKey', 'user'],
-                'string'
+                'string',
             ],
         ];
     }

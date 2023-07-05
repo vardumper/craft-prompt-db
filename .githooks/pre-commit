@@ -1,14 +1,53 @@
 #!/usr/bin/env bash
 echo "pre commit hook start"
 
-PHP_CS_FIXER="./vendor/bin/php-cs-fixer"
-PHP_CS_CONFIG=".php-cs-fixer.dist.php"
-PHP_STAN="./vendor/bin/phpstan"
-CHANGED_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.php')
+# Commit message checks
+COMMIT_MSG_FILE=$1
+if ! grep -qE "^(build|ci|docs|feat|fix|perf|refactor|style|test|chore|revert|release)(\(.+\))?: .{1,50}" "$COMMIT_MSG_FILE"; then
+  echo "Aborting commit. Your commit message is invalid. Must be in the form of: type(scope): subject"
+  exit 1
+fi
 
-if [ -n "$CHANGED_FILES" ]; then
+# Making this more flexible. Whatever this script finds in the bin, it will use.
+CHANGED_PHP_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.php')
+if [ -n "$CHANGED_PHP_FILES" ]; then
+  ECS="./vendor/bin/ecs"
+  PHP_CS_FIXER="./vendor/bin/php-cs-fixer"
+  PHPSTAN="./vendor/bin/phpstan"
+fi
+
+CHANGED_JSON_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.json')
+if [ -n "$CHANGED_JSON_FILES" ]; then
+  JSONLINT="./vendor/bin/php-cs-fixer"
+  VALIDATE_JSON="./vendor/bin/php-cs-fixer"
+fi
+
+CHANGED_YAML_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.ya?ml')
+if [ -n "$CHANGED_YAML_FILES" ]; then
+  YAML_LINT="ecs.php"
+fi
+
+CHANGED_CSS_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.css')
+if [ -n "$CHANGED_CSS_FILES" ]; then
+  CSS_LINT="ecs.php"
+fi
+
+CHANGED_SASS_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.scss')
+if [ -n "$CHANGED_SASS_FILES" ]; then
+  SASS_LINT="ecs.php"
+fi
+
+CHANGED_JS_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.(j|t)sx?')
+if [ -n "$CHANGED_JS_FILES" ]; then
+  JSLINT="ecs.php"
+  JSHINT="ecs.php"
+fi
+
+CHANGED_PHP_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.php')
+
+
     echo "php-cs-fixer start"
-    $PHP_CS_FIXER fix --config "$PHP_CS_CONFIG" $CHANGED_FILES;
+    $ECS fix --config "$PHP_CS_CONFIG" $CHANGED_FILES;
     echo "php-cs-fixer finish"
 
     echo "php-stan start"
@@ -21,6 +60,6 @@ if [ -n "$CHANGED_FILES" ]; then
     fi
 
     git add $CHANGED_FILES;
-fi
+
 
 echo "pre commit hook finish"
