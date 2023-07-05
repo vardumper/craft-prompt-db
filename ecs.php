@@ -21,21 +21,21 @@ return static function(ECSConfig $ecsConfig): void {
         throw new \RuntimeException('CRAFT_BASE_PATH not defined');
     }
 
-    // extract Craft version from composer.json/composer.lock
+    // apply ecs rules based on craft version
     $lockOrJson = file_exists(CRAFT_BASE_PATH . '/composer.lock') ? CRAFT_BASE_PATH . '/composer.lock' : CRAFT_BASE_PATH . '/composer.json';
     $dependencies = json_decode(file_get_contents($lockOrJson), true);
 
     $craftVersion = '4.0.0.';
-    try {
+    if (isset($dependencies['packages'])) {
         $craft = array_values(array_filter($dependencies['packages'], function($item) {
             return $item['name'] === 'craftcms/cms';
         }));
         $craftVersion = $craft[0]['version'];
-    } catch (\Exception $e) {
+    } elseif (isset($dependencies['require'])) {
         $craftVersion = $dependencies['require']['craftcms/cms'];
     }
-    $version = Parser::parse($craftVersion);
 
+    $version = Parser::parse($craftVersion);
     match ($version->getMajor()) {
         3 => $ecsConfig->sets([SetList::CRAFT_CMS_3]),
         4 => $ecsConfig->sets([SetList::CRAFT_CMS_4]),
