@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/bash
 
 # Commit message must be in correct format
 # https://semver.org/
