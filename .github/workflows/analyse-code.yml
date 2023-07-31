@@ -1,0 +1,39 @@
+---
+name: "Analyse Code"
+
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  analyse-code:
+    name: Analyse Code
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        actions:
+          - name: "PHPStan"
+            run: composer phpstan
+
+          - name: "Composer Validate"
+            run: composer validate --ansi
+
+          - name: "Coding Standard"
+            run: composer fix-cs
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          coverage: none
+          tools: cs2pr
+      - uses: ramsey/composer-install@v2
+        with:
+          composer-options: --no-interaction --no-progress --no-suggest --prefer-dist
+      - run: ${{ matrix.actions.run }}
