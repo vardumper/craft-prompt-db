@@ -25,7 +25,6 @@ class DefaultController extends Controller
     {
         $this->requirePermission('utility:prompt-db');
         $this->requireAcceptsJson();
-        // die('xxx');
 
         $prompt = Craft::$app->getRequest()->getRequiredBodyParam('prompt');
 
