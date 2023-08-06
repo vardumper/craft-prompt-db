@@ -6,7 +6,7 @@ use craft\ecs\SetList;
 use Jelix\Version\Parser;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 
-return static function(ECSConfig $ecsConfig): void {
+return static function (ECSConfig $ecsConfig): void {
     $ecsConfig->parallel();
     $ecsConfig->paths([
         __DIR__ . '/src',
@@ -18,7 +18,9 @@ return static function(ECSConfig $ecsConfig): void {
     }
 
     if (!defined('CRAFT_BASE_PATH')) {
-        throw new \RuntimeException('CRAFT_BASE_PATH not defined');
+        // if we're not in a craft project, use craft 4 rules (eg when in a github action runner)
+        $ecsConfig->sets([SetList::CRAFT_CMS_4]);
+        return;
     }
 
     // apply ecs rules based on craft version
@@ -27,7 +29,7 @@ return static function(ECSConfig $ecsConfig): void {
 
     $craftVersion = '4.0.0.';
     if (isset($dependencies['packages'])) {
-        $craft = array_values(array_filter($dependencies['packages'], function($item) {
+        $craft = array_values(array_filter($dependencies['packages'], function ($item) {
             return $item['name'] === 'craftcms/cms';
         }));
         $craftVersion = $craft[0]['version'];
