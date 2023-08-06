@@ -7,6 +7,7 @@ use craft\base\Model;
 use craft\base\Plugin;
 use craft\events\RegisterComponentTypesEvent;
 use craft\services\Utilities;
+use Dallgoot\Yaml\Yaml;
 use OpenAI;
 use vardumper\promptdb\models\Settings;
 use vardumper\promptdb\services\ChatGPTService;
@@ -33,6 +34,7 @@ class PromptDb extends Plugin
     public ?string $changelogUrl = 'https://raw.githubusercontent.com/vardumper/craft-prompt-db/main/CHANGELOG.md';
     public ?string $downloadUrl = 'https://github.com/vardumper/craft-prompt-db/archive/main.zip';
     public ?string $documentationUrl = 'https://github.com/vardumper/craft-prompt-db/blob/main/README.md';
+    public DBSchemaService $dbSchemaService;
 
     public static function config(): array
     {
@@ -55,17 +57,22 @@ class PromptDb extends Plugin
 
         Craft::setAlias('@vardumper/prompt-db', $this->getBasePath());
 
+        $yaml = null;
+        if (!function_exists('yaml_emit')) {
+            $yaml = new Yaml();
+        }
+
         $this->setComponents([
-            'chatGPTService' => function() {
-                $user = !empty($this->settings->user) ? $this->settings->user : '';
-                $openAi = OpenAI::client($this->settings->apiKey);
+            'chatGPTService' => function () {
+                $user = !empty($this->getSettings()->user) ? $this->getSettings()->user : '';
+                $openAi = OpenAI::client($this->getSettings()->apiKey);
                 return new ChatGPTService($openAi, $user);
             },
-            'dbSchemaService' => new DBSchemaService(),
+            'dbSchemaService' => new DBSchemaService($yaml),
         ]);
 
         // Defer most setup tasks until Craft is fully initialized
-        Craft::$app->onInit(function() {
+        Craft::$app->onInit(function () {
             $this->attachEventHandlers();
             // ...
         });
@@ -74,7 +81,7 @@ class PromptDb extends Plugin
         Event::on(
             Utilities::class,
             Utilities::EVENT_REGISTER_UTILITY_TYPES,
-            function(RegisterComponentTypesEvent $event) {
+            function (RegisterComponentTypesEvent $event) {
                 $event->types[] = Utility::class;
             }
         );

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6fd5f6070e86fb47a4353044370f611a",
+    "content-hash": "7fa5b48632ae2db391c0f4a5ee5564bb",
     "packages": [
         {
             "name": "brainmaestro/composer-git-hooks",
@@ -1003,6 +1003,69 @@
                 "source": "https://github.com/creocoder/yii2-nested-sets/tree/master"
             },
             "time": "2015-01-27T10:53:51+00:00"
+        },
+        {
+            "name": "dallgoot/yaml",
+            "version": "0.9.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dallgoot/yaml.git",
+                "reference": "7e7ce911ad626ae35a6ea2086c000f5ee492607f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dallgoot/yaml/zipball/7e7ce911ad626ae35a6ea2086c000f5ee492607f",
+                "reference": "7e7ce911ad626ae35a6ea2086c000f5ee492607f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-pcre": "*",
+                "ext-spl": "*",
+                "lib-pcre": "*",
+                "php": ">=8.1.14"
+            },
+            "require-dev": {
+                "ext-reflection": "*",
+                "phan/phan": "*",
+                "phpmetrics/phpmetrics": "*",
+                "phpunit/phpunit": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Dallgoot\\Yaml\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "dallgoot",
+                    "email": "stephane.rebai@gmail.com"
+                }
+            ],
+            "description": "Provides loader, dumper and an API for YAML content. Loader builds to equivalent data types in PHP 8.x",
+            "homepage": "https://github.com/dallgoot/yaml",
+            "keywords": [
+                "parser",
+                "reader",
+                "writer",
+                "yaml"
+            ],
+            "support": {
+                "issues": "https://github.com/dallgoot/yaml/issues",
+                "source": "https://github.com/dallgoot/yaml/tree/0.9.1.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/dallgoot",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-04-11T09:49:37+00:00"
         },
         {
             "name": "defuse/php-encryption",

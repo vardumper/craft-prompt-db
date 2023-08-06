@@ -17,6 +17,7 @@
     "ext-yaml": "*",
     "brainmaestro/composer-git-hooks": "^2.8.5",
     "craftcms/cms": "^4.4.16.1",
+    "dallgoot/yaml": "0.9.1.1",
     "matthiasmullie/minify": "^1.3.71",
     "openai-php/client": "^0.6.4"
   },
