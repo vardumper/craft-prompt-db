@@ -20,7 +20,7 @@ class ChatGPTService extends Component
     private string $user;
     private string $cacheDir;
     private string $basePrompt;
-    private string $lastQuery = '';
+    // private string $lastQuery = '';
 
     public function __construct(OpenAIClient $openAiClient, string $user)
     {
@@ -35,30 +35,30 @@ class ChatGPTService extends Component
         $prompt = sprintf($this->basePrompt, trim($schema), trim($driverName), trim($driverVersion), trim($prompt));
         $answer = $this->getCachePrompt($prompt);
         if ($answer !== false) {
-            $this->lastQuery = $answer;
+            // $this->lastQuery = $answer;
             return $answer;
         }
 
         $response = $this->openAiClient->chat()->create([
-      'model' => 'gpt-3.5-turbo',
-      'temperature' => 0,
-      'user' => $this->user,
-      'messages' => [
-        ['role' => 'user', 'content' => $prompt],
-      ],
-    ]);
+            'model' => 'gpt-3.5-turbo',
+            'temperature' => 0,
+            'user' => $this->user,
+            'messages' => [
+                ['role' => 'user', 'content' => $prompt],
+            ],
+        ]);
 
         $answer = $response->choices[0]->message->content;
         if (!empty($answer)) {
-            $this->lastQuery = $answer;
+            // $this->lastQuery = $answer;
             $this->setCachePrompt($prompt, $answer);
             return $answer;
         }
 
         throw new InvalidChatGPTException(sprintf(
-      "ChatGPT did not produce an a valid SQL statement: %s",
-      var_export($answer, true)
-    ));
+            "ChatGPT did not produce an a valid SQL statement: %s",
+            var_export($answer, true)
+        ));
     }
 
     protected function getCachePrompt(string $prompt): string|false

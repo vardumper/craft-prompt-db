@@ -128,9 +128,14 @@ class DefaultController extends Controller
         $links = $xpath->query('//ul[@class="pagination"]/li/a');
         if ($links->length) {
             foreach ($links as $link) {
-                $active = strpos($link->parentNode->getAttribute('class'), 'active') !== false ? 'active' : '';
-                $link->setAttribute('class', 'btn ' . $active);
-                $link->setAttribute('href', '#');
+                $active = '';
+                if ($link->parentNode instanceof \DOMElement) {
+                    $active = strpos($link->parentNode->getAttribute('class'), 'active') !== false ? 'active' : '';
+                }
+                if ($link instanceof \DOMElement) {
+                    $link->setAttribute('class', 'btn ' . $active);
+                    $link->setAttribute('href', '#');
+                }
             }
         }
         return $dom->saveXML($dom->documentElement);

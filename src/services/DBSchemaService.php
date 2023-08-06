@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace vardumper\promptdb\services;
 
 use Craft;
+use Dallgoot\Yaml\Yaml;
 use vardumper\promptdb\PromptDb;
 use yii\base\Component;
 
@@ -22,9 +23,16 @@ class DBSchemaService extends Component
      */
     private string $cacheDir;
 
-    public function __construct()
+    /**
+     * optional YAML implementation for when the yaml php extension is missing
+     * @var ?Yaml $yaml
+     */
+    private ?Yaml $yaml = null;
+
+    public function __construct(?Yaml $yaml = null)
     {
         $this->cacheDir = PromptDb::getCachePath();
+        $this->yaml = $yaml;
     }
 
     public function __invoke(): string
@@ -40,10 +48,11 @@ class DBSchemaService extends Component
         foreach ($tablenames as $table) {
 
             // filter out empty tables
-            if (Craft::$app
+            $emptyTableArray = Craft::$app
                 ->getDb()
                 ->createCommand(sprintf('SELECT COUNT(*) AS count FROM %s', $table))
-                ->queryOne(\PDO::FETCH_COLUMN) === 0) {
+                ->queryOne(\PDO::FETCH_COLUMN);
+            if (!$emptyTableArray || count(intval($emptyTableArray)) === 0) {
                 continue;
             }
 
@@ -69,14 +78,14 @@ class DBSchemaService extends Component
             $tableInfo['columns'] = $cols;
             $allTables[] = $tableInfo;
         }
-        $yaml = \yaml_emit($allTables);
+        $yaml = ($this->yaml instanceof Yaml) ? $this->yaml->dump($allTables) : \yaml_emit($allTables);
         $this->setCacheSchema($yaml);
         return $yaml;
     }
 
     /**
      * only create a YAML db schema once every 24 hours
-     * @return bool|string|null
+     * @return string|null
      */
     protected function getCacheSchema(): ?string
     {

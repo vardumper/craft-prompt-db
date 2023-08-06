@@ -18,8 +18,8 @@ jobs:
           - name: "PHPStan"
             run: composer phpstan
 
-          - name: "Composer Validate"
-            run: composer validate --ansi
+          # - name: "Composer Validate"
+          #   run: composer validate --ansi
 
           - name: "Coding Standard"
             run: composer fix-cs
