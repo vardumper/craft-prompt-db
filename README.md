@@ -1,6 +1,6 @@
-# Prompt DB
+# Craft Prompt DB
 
-An experimental use of chatgpt to turn natural language into database queries and code examples.
+An experimental use of ChatGPT to turn natural language into database queries and Yii and Craft code examples.
 
 ## Requirements
 
