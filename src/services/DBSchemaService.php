@@ -46,13 +46,12 @@ class DBSchemaService extends Component
         asort($tablenames);
         $allTables = [];
         foreach ($tablenames as $table) {
-
             // filter out empty tables
-            $emptyTableArray = Craft::$app
+            $rowCount = Craft::$app
                 ->getDb()
                 ->createCommand(sprintf('SELECT COUNT(*) AS count FROM %s', $table))
                 ->queryOne(\PDO::FETCH_COLUMN);
-            if (!$emptyTableArray || count(intval($emptyTableArray)) === 0) {
+            if (is_int($rowCount) && $rowCount === 0 || $rowCount === false) {
                 continue;
             }
 
@@ -68,11 +67,51 @@ class DBSchemaService extends Component
                 ->queryAll(\PDO::FETCH_ASSOC);
 
             $cols = [];
+            file_put_contents($this->cacheDir . '/test' . $table . '.txt', var_export($columns, true));
+
+            $foreignKeys = Craft::$app->getDb()->createCommand(sprintf('
+SELECT
+  `TABLE_SCHEMA`,
+  `TABLE_NAME`,
+  `COLUMN_NAME`,
+  `REFERENCED_TABLE_SCHEMA`,
+  `REFERENCED_TABLE_NAME`,
+  `REFERENCED_COLUMN_NAME`
+FROM
+  `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE`
+WHERE
+  `TABLE_SCHEMA` = SCHEMA()
+  AND `TABLE_NAME` = %s
+  AND `REFERENCED_TABLE_NAME` IS NOT NULL;', "'" . $table . "'"))->queryAll();
+
+            file_put_contents($this->cacheDir . '/keys' . $table . '.txt', var_export($foreignKeys, true));
+
             foreach ($columns as $column) {
-                $cols[] = [
+                // var_dump($tableInfo);
+                // var_dump($column);
+                // exit;
+
+                $tmp = [
                     'name' => $column['Field'],
                     'type' => $column['Type'],
                 ];
+
+                // not null?
+                $tmp['nullable'] = $column['Null'] === "YES" ? true : false;
+                // primary key?
+                if ($column['Key'] === "PRI") {
+                    $tmp['primary_key'] = true;
+                }
+                // foreign keys
+                foreach ($foreignKeys as $key) {
+                    if ($key['COLUMN_NAME'] === $column['Field']) {
+                        $tmp['foreign_key'] = [
+                            'references' => $key['REFERENCED_TABLE_NAME'],
+                            'on_column' => $key['REFERENCED_COLUMN_NAME'],
+                        ];
+                    }
+                }
+                $cols[] = $tmp;
             }
 
             $tableInfo['columns'] = $cols;

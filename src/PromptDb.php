@@ -34,7 +34,6 @@ class PromptDb extends Plugin
     public ?string $changelogUrl = 'https://raw.githubusercontent.com/vardumper/craft-prompt-db/main/CHANGELOG.md';
     public ?string $downloadUrl = 'https://github.com/vardumper/craft-prompt-db/archive/main.zip';
     public ?string $documentationUrl = 'https://github.com/vardumper/craft-prompt-db/blob/main/README.md';
-    public DBSchemaService $dbSchemaService;
 
     public static function config(): array
     {
