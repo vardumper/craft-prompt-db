@@ -21,11 +21,12 @@ use yii\base\Event;
  * @method static PromptDb getInstance()
  * @method Settings getSettings()
  * @author Erik Pöhler <info@erikpoehler.com>
+ * @property ChatGTPService $chatGPTService;
+ * @property-read ChatGPTService $chatGPTService
+ * @property DBSchemaService $dbSchemaService
+ * @property-read DBSchemaService $dbSchemaService
  * @copyright Erik Pöhler
  * @license https://craftcms.github.io/license/ Craft License
- * @property-read ChatGPT $chatGPT
- * @property ChatGTP $vhatGPT;
- * @property-read ChatGPTService $chatGPTService
  */
 class PromptDb extends Plugin
 {
