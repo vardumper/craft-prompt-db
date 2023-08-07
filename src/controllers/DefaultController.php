@@ -45,6 +45,7 @@ class DefaultController extends Controller
                 Craft::error($sql);
                 return $this->asJson([
                     'success' => false,
+                    'sql' => $sql,
                     'error' => 'This plugin does not allow you to modify the database.',
                 ]);
             }
