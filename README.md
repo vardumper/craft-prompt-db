@@ -5,7 +5,7 @@ An experimental use of ChatGPT to turn natural language into database queries an
 ## Requirements
 
 - This plugin requires Craft CMS 4.4.0 or later, and PHP 8.0.2 or later.
-- This plugin uses PHPs YAML extension to create a very compact database schema file DDL.
+- This plugin uses PHPs YAML extension to create a more compact database DDL file.
 
 On macOS, you can install PHPs YAML extension like this
 
@@ -14,6 +14,7 @@ brew install libyaml # installs libyaml
 sudo find /opt/homebrew/opt -name libyaml -d | pbcopy # copies libyaml path to clipboard
 pecl install yaml # when prompted for yaml path, paste the path from the clipboard
 ```
+If the YAML extension should be missing on the system, the plugin will use [dallgoot/yaml](https://github.com/dallgoot/yaml).
 
 ## Installation
 
