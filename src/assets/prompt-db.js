@@ -42,7 +42,7 @@ $form.on("submit", function (ev) {
 
         $results.html(html);
         if (query.length) {
-          $query.html(query);
+          $query.html(query.replace(/  |\r\n|\n|\r/gm, ""));
           $query.parent().parent().removeAttr("hidden");
           hljs.highlightAll();
         }

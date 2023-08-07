@@ -7,7 +7,7 @@ pre,
 code,
 samp,
 kbd {
-  border-radius: var(--border-radius);
+  border-radius: 5px;
   background: var(--code-background-color);
   color: var(--code-color);
   font-weight: var(--font-weight);
@@ -26,12 +26,12 @@ samp {
 
 pre {
   display: block;
-  margin-bottom: var(--spacing);
+  margin-bottom: 16px;
   overflow-x: auto;
 }
 pre>code {
     display: block;
-    padding: var(--spacing);
+    padding: 16px;
     font-size: 14px;
     background: none;
     line-height: var(--line-height);
