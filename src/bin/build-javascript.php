@@ -39,6 +39,21 @@ try {
     }
     array_unshift($sourceFiles, __DIR__ . '/../assets/highlight.js'); // add to beginning of array
 
+    // typed.js
+    if (!is_file(__DIR__ . '/../assets/typed.min.js')) {
+        $response = $client->get('https://cdnjs.cloudflare.com/ajax/libs/typed.js/1.1.1/typed.min.js');
+        if ($response->getStatusCode() > 200) {
+            throw new \Exception('couldn\'t fetch latest release from unpkg.com');
+        }
+        file_put_contents(__DIR__ . '/../assets/typed.min.js', (string) $response->getBody());
+        // $response = $client->get('https://cdnjs.cloudflare.com/ajax/libs/typed.js/1.1.1/typed.min.js.map');
+        // if ($response->getStatusCode() > 200) {
+        //     throw new \Exception('couldn\'t fetch latest release from unpkg.com');
+        // }
+        // file_put_contents(__DIR__ . '/../assets/typed.min.js.map', (string) $response->getBody());
+    }
+    array_unshift($sourceFiles, __DIR__ . '/../assets/typed.min.js'); // add to beginning of array
+
     // join and minify
     $minifier = new JS();
     foreach ($sourceFiles as $file) {
